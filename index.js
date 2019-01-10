@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const fs = require('fs');
 const ytdl = require('ytdl-core');
-const Player = require('./src/Player/player');
+const Player = require('./src/player/Player');
 
 const config = require('./config.js');
 const client = new Discord.Client();
