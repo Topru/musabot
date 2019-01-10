@@ -1,33 +1,23 @@
 const Discord = require('discord.js');
 const fs = require('fs');
 const ytdl = require('ytdl-core');
+const Player = require('./src/Player/player');
 
 const config = require('./config.js');
 const client = new Discord.Client();
-
 client.login(config.token);
+const player = new Player();
+
+
+const commands = player.commands;
+const commandNames = Object.keys(commands);
 
 client.on('message', msg => {
-  if (msg.content.includes('a')) {
-    console.log("asd");
-    if(msg.member.voiceChannel) {
-      msg.member.voiceChannel.join()
-        .then(connection => {
-          msg.reply("Joined");
-          const streamOptions = { seek: 0, volume: 100 };
-          const dispatcher = connection.playFile('./asd.mp3', streamOptions);
-          dispatcher.on('error', e => {
-            console.log(e);
-          })
-          dispatcher.on('start', () => {
-            // The song has finished
-            console.log("start");
-          });
-          dispatcher.on('end', () => {
-            // The song has finished
-            console.log("end");
-          });
-        });
+  if(msg.content.charAt(0) === '!') {
+    const msgCommand = msg.content.split(" ")[0];
+    const command = msgCommand.substring(1, msgCommand.length)
+    if(commandNames.includes(command)) {
+      commands[command](msg);
     }
   }
 })
