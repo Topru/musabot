@@ -1,5 +1,6 @@
 
-const ytdl = require('ytdl-core');
+const Song = require('../song/Song');
+const Playlist = require('./Playlist');
 
 class Player {
   constructor() {
@@ -10,25 +11,48 @@ class Player {
     this.connection = false;
     this.dispatcher = false;
     this.playing = false;
+
+    this.playlist = new Playlist();
   }
 
   
   async play(msg) {
     try {
-      this.connection = await msg.member.voiceChannel.join();
+      if(!this.connection) {
+        this.connection = await msg.member.voiceChannel.join();
+      }
       const videoUrl = msg.content.split(" ")[1];
-      const video = ytdl(videoUrl, { format: 'bestaudio' });
-      this.dispatcher = this.connection.playStream(video);
-      this._setupDispatcher();
+      const song = new Song(videoUrl);
+      this.playlist.add(song);
+      console.log(this.playlist.getPlaylist());
+      if(!this.playing) {
+        const streamOptions = { volume: song.getVolume() };
+        this.dispatcher = this.connection.playStream(song.streamSong(), streamOptions);
+        this._setupDispatcher();
+      }
     } catch(e) {
       console.log(e);
     }
   }
+
+  playNext() {
+    const song = this.playlist.getNext();
+    if(!song) {
+      return;
+    }
+    const streamOptions = { volume: song.getVolume() };
+    this.dispatcher = this.connection.playStream(song.streamSong(), streamOptions);    
+  }
   
   stop(message) {
-    if(this.connection) {
+    if(this.dispatcher) {
       this.dispatcher.end();
+    }
+    if(this.connection) {
       this.connection.disconnect();
+      this.connection = false;
+      this.playing = false;
+      console.log('stopped playing');
     }
   }
   
@@ -37,9 +61,8 @@ class Player {
       this.playing = true;
       console.log('started playing');
     });
-    this.dispatcher.on('stop', () => {
-      this.playing = false;
-      console.log('stopped playing');
+    this.dispatcher.on('end', () => {
+      this.playNext();
     });
   }
 }
