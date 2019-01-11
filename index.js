@@ -6,8 +6,8 @@ const Player = require('./src/player/Player');
 const config = require('./config.js');
 const client = new Discord.Client();
 client.login(config.token);
-const player = new Player();
 
+const player = new Player();
 
 const commands = player.commands;
 const commandNames = Object.keys(commands);

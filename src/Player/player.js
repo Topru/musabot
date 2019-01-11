@@ -1,12 +1,14 @@
 
 const Song = require('../song/Song');
 const Playlist = require('./Playlist');
+const Search = require('../search/Search');
 
 class Player {
   constructor() {
     this.commands = {
       play: this.play.bind(this),
-      stop: this.stop.bind(this)
+      stop: this.stop.bind(this),
+      next: this.playNext.bind(this)
     };
     this.connection = false;
     this.dispatcher = false;
@@ -21,8 +23,9 @@ class Player {
       if(!this.connection) {
         this.connection = await msg.member.voiceChannel.join();
       }
-      const videoUrl = msg.content.split(" ")[1];
-      const song = new Song(videoUrl);
+      const videoSearch = msg.content.substr(msg.content.indexOf(" ") + 1);
+      const song = await new Search().searchYoutube(videoSearch);
+      console.log(song);
       this.playlist.add(song);
       console.log(this.playlist.getPlaylist());
       if(!this.playing) {
@@ -36,12 +39,13 @@ class Player {
   }
 
   playNext() {
+    this.dispatcher.end();
     const song = this.playlist.getNext();
     if(!song) {
       return;
     }
     const streamOptions = { volume: song.getVolume() };
-    this.dispatcher = this.connection.playStream(song.streamSong(), streamOptions);    
+    this.dispatcher = this.connection.playStream(song.streamSong(), streamOptions);
   }
   
   stop(message) {
@@ -52,6 +56,7 @@ class Player {
       this.connection.disconnect();
       this.connection = false;
       this.playing = false;
+      this.playlist = new Playlist();
       console.log('stopped playing');
     }
   }
@@ -59,7 +64,7 @@ class Player {
   _setupDispatcher() {
     this.dispatcher.on('start', () => {
       this.playing = true;
-      console.log('started playing');
+      console.log('started playing ');
     });
     this.dispatcher.on('end', () => {
       this.playNext();

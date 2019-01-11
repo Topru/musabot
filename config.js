@@ -25,5 +25,5 @@ module.exports = {
     time: 10000, // In milliseconds
   },
 
-  youtubeToken: "x"
+  youtubeToken: "***REMOVED***"
 };
