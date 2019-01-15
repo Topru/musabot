@@ -21,14 +21,18 @@ class Search {
           part: 'snippet',
           maxResults: 5
         });
-        console.log(results.data);
         if(results.data.items.length < 1) {
           return false;
         }
         const songResult = results.data.items[0];
-        const song = new Song(songResult.id, `https://www.youtube.com/watch?v=${songResult.id}`, songResult.snippet.title, query);
-
-        return song;
+        return new Promise((resolve, reject) => {
+          const song = new Song(songResult.id, `https://www.youtube.com/watch?v=${songResult.id}`, songResult.snippet.title, query);
+          song.init((initsong) => {
+            console.log("asdgfdsafasdfasdfdsaf");
+            console.log(initsong);
+            resolve(initsong);
+          })
+        })
 
       } else {
         const results = await this.youtube.search.list({
@@ -37,7 +41,6 @@ class Search {
           maxResults: 5
         });
         let video = null;
-        console.log(JSON.stringify(results.data));
         for (let result of results.data.items) {
           if(result.id.kind == "youtube#video") {
             video = result;
@@ -47,11 +50,15 @@ class Search {
         if(video === null) {
           return false;
         }
-        console.log(video);
         const songResult = video;
-        const song = new Song(songResult.id.videoId, `https://www.youtube.com/watch?v=${songResult.id.videoId}`, songResult.snippet.title, query);
-
-        return song;
+        return new Promise((resolve, reject) => {
+          const song = new Song(songResult.id.videoId, `https://www.youtube.com/watch?v=${songResult.id.videoId}`, songResult.snippet.title, query);
+          song.init((initsong) => {
+            console.log("asdgfdsafasdfasdfdsaf");
+            console.log(initsong);
+            resolve(initsong);
+          })
+        })
 
       }
     } catch(e) {

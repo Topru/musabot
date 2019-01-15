@@ -22,6 +22,8 @@ class Player {
     try {
       const videoSearch = msg.content.substr(msg.content.indexOf(" ") + 1);
       const song = await new Search().searchYoutube(videoSearch);
+      console.log("paskaaaaa");
+      console.log(song);
       if(song == false) {
         msg.reply("Song not found.")
         return;
@@ -30,6 +32,7 @@ class Player {
         console.log("asd");
         this.connection = await msg.member.voiceChannel.join();
       }
+      
       console.log(song);
       this.playlist.add(song);
       console.log(this.playlist.getPlaylist());
@@ -37,6 +40,9 @@ class Player {
         const streamOptions = { volume: song.getVolume() };
         this.dispatcher = this.connection.playStream(song.streamSong(), streamOptions);
         this._setupDispatcher();
+        msg.channel.send(`\`\`\`\nNow playing:\n[${song.getTitle()}]\`\`\``);
+      } else {
+        msg.channel.send(`\`\`\`\nQueued:\n[${song.getTitle()}]\`\`\``);
       }
     } catch(e) {
       console.log(e);
@@ -52,6 +58,7 @@ class Player {
     }
     const streamOptions = { volume: song.getVolume() };
     this.dispatcher = this.connection.playStream(song.streamSong(), streamOptions);
+    msg.channel.send(`\`\`\`\nNow playing:\n[${song.getTitle()}]\`\`\``);
   }
   
   stop(message) {
