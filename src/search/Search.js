@@ -19,9 +19,12 @@ class Search {
         const results = await this.youtube.videos.list({
           id: query.split('v=')[1],
           part: 'snippet',
-          maxResults: 1
+          maxResults: 5
         });
         console.log(results.data);
+        if(results.data.items.length < 1) {
+          return false;
+        }
         const songResult = results.data.items[0];
         const song = new Song(songResult.id, `https://www.youtube.com/watch?v=${songResult.id}`, songResult.snippet.title, query);
 
@@ -31,9 +34,21 @@ class Search {
         const results = await this.youtube.search.list({
           q: query,
           part: 'snippet',
-          maxResults: 1
+          maxResults: 5
         });
-        const songResult = results.data.items[0];
+        let video = null;
+        console.log(JSON.stringify(results.data));
+        for (let result of results.data.items) {
+          if(result.id.kind == "youtube#video") {
+            video = result;
+            break;
+          }
+        }
+        if(video === null) {
+          return false;
+        }
+        console.log(video);
+        const songResult = video;
         const song = new Song(songResult.id.videoId, `https://www.youtube.com/watch?v=${songResult.id.videoId}`, songResult.snippet.title, query);
 
         return song;

@@ -20,11 +20,16 @@ class Player {
   
   async play(msg) {
     try {
-      if(!this.connection) {
-        this.connection = await msg.member.voiceChannel.join();
-      }
       const videoSearch = msg.content.substr(msg.content.indexOf(" ") + 1);
       const song = await new Search().searchYoutube(videoSearch);
+      if(song == false) {
+        msg.reply("Song not found.")
+        return;
+      }
+      if(!this.connection) {
+        console.log("asd");
+        this.connection = await msg.member.voiceChannel.join();
+      }
       console.log(song);
       this.playlist.add(song);
       console.log(this.playlist.getPlaylist());
@@ -42,6 +47,7 @@ class Player {
     this.dispatcher.end();
     const song = this.playlist.getNext();
     if(!song) {
+      this.playing = false;
       return;
     }
     const streamOptions = { volume: song.getVolume() };
