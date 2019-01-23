@@ -46,10 +46,11 @@ class Song {
       const song = this;
       const fileName = song.getId().replace(/[^a-z0-9]/gi, '_').toLowerCase();
       const writeStream = fs.createWriteStream(`./tmp/${fileName}.webm`);
-      ytdl(song.getUrl(), { filter: 'audioonly' })
+      ytdl(song.getUrl(), { filter: 'audioandvideo' })
         .pipe(writeStream);
-  
+      console.log("started");
       writeStream.on('close', () => {
+        console.log("done");
         exec(`ffmpeg -i ./tmp/${fileName}.webm -filter:a volumedetect -f null /dev/null`, (err, stdout, stderr) => {
           if (err) {
             // node couldn't execute the command
