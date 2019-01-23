@@ -39,7 +39,7 @@ class Player {
       if(!this.playing) {
         const streamOptions = { volume: song.getVolume() };
         this.dispatcher = this.connection.playStream(song.streamSong(), streamOptions);
-        this._setupDispatcher();
+        this._setupDispatcher(msg);
         msg.channel.send(`\`\`\`\nNow playing:\n[${song.getTitle()}]\`\`\``);
       } else {
         msg.channel.send(`\`\`\`\nQueued:\n[${song.getTitle()}]\`\`\``);
@@ -49,7 +49,7 @@ class Player {
     }
   }
 
-  playNext() {
+  playNext(msg) {
     this.dispatcher.end();
     const song = this.playlist.getNext();
     if(!song) {
@@ -61,7 +61,7 @@ class Player {
     msg.channel.send(`\`\`\`\nNow playing:\n[${song.getTitle()}]\`\`\``);
   }
   
-  stop(message) {
+  stop(msg) {
     if(this.dispatcher) {
       this.dispatcher.end();
     }
@@ -74,13 +74,13 @@ class Player {
     }
   }
   
-  _setupDispatcher() {
+  _setupDispatcher(msg) {
     this.dispatcher.on('start', () => {
       this.playing = true;
       console.log('started playing ');
     });
     this.dispatcher.on('end', () => {
-      this.playNext();
+      this.playNext(msg);
     });
   }
 }

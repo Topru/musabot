@@ -20,10 +20,12 @@ class Playlist {
   }
 
   getNext() {
+    const next = this.playlist[this.currentIndex + 1];
     if(this.currentIndex + 1 > this.playlist.length) {
       return false;
     }
-    return this.playlist[this.currentIndex + 1];
+    this.currentIndex++;
+    return next;
   }
 
 }
