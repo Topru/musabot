@@ -28,8 +28,6 @@ class Search {
         return new Promise((resolve, reject) => {
           const song = new Song(songResult.id, `https://www.youtube.com/watch?v=${songResult.id}`, songResult.snippet.title, query);
           song.init((initsong) => {
-            console.log("asdgfdsafasdfasdfdsaf");
-            console.log(initsong);
             resolve(initsong);
           })
         })
@@ -54,8 +52,6 @@ class Search {
         return new Promise((resolve, reject) => {
           const song = new Song(songResult.id.videoId, `https://www.youtube.com/watch?v=${songResult.id.videoId}`, songResult.snippet.title, query);
           song.init((initsong) => {
-            console.log("asdgfdsafasdfasdfdsaf");
-            console.log(initsong);
             resolve(initsong);
           })
         })

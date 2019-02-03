@@ -15,7 +15,6 @@ class Song {
 
   init(callback) {
     this._startVolumeScan().then(() => {
-      console.log("paskapaskapaskapaskapaska");
       callback(this);
     });
   }
@@ -46,11 +45,12 @@ class Song {
       const song = this;
       const fileName = song.getId().replace(/[^a-z0-9]/gi, '_').toLowerCase();
       const writeStream = fs.createWriteStream(`./tmp/${fileName}.webm`);
-      ytdl(song.getUrl(), { filter: 'audioandvideo' })
-        .pipe(writeStream);
-      console.log("started");
+      ytdl(song.getUrl(), { filter: 'audioandvideo', range: { start: 0, end: 19629071 } })
+        .pipe(writeStream)
+        .on('progress', (length, downloaded, totallength) => {
+          const percent = downloaded/totallength;
+        });
       writeStream.on('close', () => {
-        console.log("done");
         exec(`ffmpeg -i ./tmp/${fileName}.webm -filter:a volumedetect -f null /dev/null`, (err, stdout, stderr) => {
           if (err) {
             // node couldn't execute the command
@@ -58,16 +58,14 @@ class Song {
           }
           const meanVolume = stderr.split('mean_volume: ')[1].split(' dB')[0]
           // the *entire* stdout and stderr (buffered)
-          console.log(`stdout: ${stdout}`);
-          console.log(`stderr: ${stderr}`);
           const playVolume = 1/(-25/parseInt(meanVolume));
-          console.log(playVolume);
           song.setVolume(playVolume);
+          const stats = fs.statSync(`./tmp/${fileName}.webm`);
+          console.log(stats.size);
           fs.unlink(`./tmp/${fileName}.webm`, () => {
             resolve();
           });
         });
-        console.log("aafdsafsdafssdafsd");
       });
     });
   }
