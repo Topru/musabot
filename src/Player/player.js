@@ -22,23 +22,21 @@ class Player {
     try {
       const videoSearch = msg.content.substr(msg.content.indexOf(" ") + 1);
       const song = await new Search().searchYoutube(videoSearch);
-      console.log("paskaaaaa");
-      console.log(song);
       if(song == false) {
         msg.reply("Song not found.")
         return;
       }
       if(!this.connection) {
-        console.log("asd");
+
         this.connection = await msg.member.voiceChannel.join();
       }
-      
-      console.log(song);
+
       this.playlist.add(song);
-      console.log(this.playlist.getPlaylist());
+      //console.log(this.playlist.getPlaylist());
       if(!this.playing) {
         const streamOptions = { volume: song.getVolume() };
-        this.dispatcher = this.connection.playStream(song.streamSong(), streamOptions);
+        const stream = song.streamSong();
+        this.dispatcher = this.connection.playStream(stream, streamOptions);
         this._setupDispatcher(msg);
         msg.channel.send(`\`\`\`\nNow playing:\n[${song.getTitle()}]\`\`\``);
       } else {
@@ -50,14 +48,18 @@ class Player {
   }
 
   playNext(msg) {
+    console.log("playlist:");
+    console.log(this.playlist.getPlaylist());
     this.dispatcher.end();
     const song = this.playlist.getNext();
+    console.log(song);
     if(!song) {
       this.playing = false;
       return;
     }
     const streamOptions = { volume: song.getVolume() };
     this.dispatcher = this.connection.playStream(song.streamSong(), streamOptions);
+    this._setupDispatcher(msg);
     msg.channel.send(`\`\`\`\nNow playing:\n[${song.getTitle()}]\`\`\``);
   }
   
@@ -80,6 +82,7 @@ class Player {
       console.log('started playing ');
     });
     this.dispatcher.on('end', () => {
+      console.log("next!");
       this.playNext(msg);
     });
   }
