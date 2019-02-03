@@ -8,13 +8,23 @@ class Player {
     this.commands = {
       play: this.play.bind(this),
       stop: this.stop.bind(this),
-      next: this.playNext.bind(this)
+      next: this.playNext.bind(this),
+      repeat: this.toggleLoop.bind(this)
     };
     this.connection = false;
     this.dispatcher = false;
     this.playing = false;
 
     this.playlist = new Playlist();
+  }
+
+  toggleLoop(msg) {
+    const repeat = this.playlist.toggleRepeat();
+    if(repeat) {
+      msg.reply("Playlist is now looping.")
+    } else {
+      msg.reply("Playlist is now not looping.")
+    }
   }
 
   
@@ -61,15 +71,15 @@ class Player {
   }
   
   stop(msg) {
-    if(this.dispatcher) {
-      this.dispatcher.end();
-    }
     if(this.connection) {
-      this.connection.disconnect();
-      this.connection = false;
       this.playing = false;
       this.playlist = new Playlist();
+      this.connection.disconnect();
+      this.connection = false;
       console.log('stopped playing');
+    }
+    if(this.dispatcher) {
+      this.dispatcher.end();
     }
   }
   
