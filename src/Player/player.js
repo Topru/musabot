@@ -48,11 +48,8 @@ class Player {
   }
 
   playNext(msg) {
-    console.log("playlist:");
-    console.log(this.playlist.getPlaylist());
     this.dispatcher.end();
     const song = this.playlist.getNext();
-    console.log(song);
     if(!song) {
       this.playing = false;
       return;
