@@ -25,5 +25,7 @@ module.exports = {
     time: 10000, // In milliseconds
   },
 
-  youtubeToken: "***REMOVED***"
+  youtubeToken: "***REMOVED***",
+
+  dataStoreCredentials: "***REMOVED***"
 };
