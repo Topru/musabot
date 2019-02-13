@@ -45,10 +45,10 @@ class Player {
 
         this.connection = await msg.member.voiceChannel.join();
       }
-
       this.playlist.add(song);
       //console.log(this.playlist.getPlaylist());
       if(!this.playing) {
+        this.playing = true;
         const streamOptions = { volume: song.getVolume() };
         const stream = song.streamSong();
         this.dispatcher = this.connection.playStream(stream, streamOptions);
@@ -93,7 +93,6 @@ class Player {
   
   _setupDispatcher(msg) {
     this.dispatcher.on('start', () => {
-      this.playing = true;
       console.log('started playing ');
     });
     this.dispatcher.on('end', () => {
