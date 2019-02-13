@@ -9,7 +9,8 @@ class Player {
       play: this.play.bind(this),
       stop: this.stop.bind(this),
       next: this.cmdNext.bind(this),
-      repeat: this.toggleLoop.bind(this)
+      repeat: this.toggleLoop.bind(this),
+      queue: this.getQueue.bind(this)
     };
     this.connection = false;
     this.dispatcher = false;
@@ -21,10 +22,14 @@ class Player {
   toggleLoop(msg) {
     const repeat = this.playlist.toggleRepeat();
     if(repeat) {
-      msg.reply("Playlist is now looping.")
+      msg.channel.send("Playlist is now looping.")
     } else {
-      msg.reply("Playlist is now not looping.")
+      msg.channel.send("Playlist is now not looping.")
     }
+  }
+
+  getQueue(msg) {
+    msg.channel.send(this.playlist.getQueueMsg());
   }
 
   
