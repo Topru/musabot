@@ -8,7 +8,7 @@ class Player {
     this.commands = {
       play: this.play.bind(this),
       stop: this.stop.bind(this),
-      next: this.playNext.bind(this),
+      next: this.cmdNext.bind(this),
       repeat: this.toggleLoop.bind(this)
     };
     this.connection = false;
@@ -57,8 +57,11 @@ class Player {
     }
   }
 
-  playNext(msg) {
+  cmdNext(msg) {
     this.dispatcher.end();
+  }
+
+  playNext(msg) {
     const song = this.playlist.getNext();
     if(!song) {
       this.playing = false;
