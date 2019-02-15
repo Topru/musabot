@@ -4,7 +4,7 @@ const Playlist = require('./Playlist');
 const Search = require('../search/Search');
 
 class Player {
-  constructor() {
+  constructor(serverid) {
     this.commands = {
       play: this.play.bind(this),
       stop: this.stop.bind(this),
@@ -12,6 +12,7 @@ class Player {
       repeat: this.toggleLoop.bind(this),
       queue: this.getQueue.bind(this)
     };
+    this.server = serverid;
     this.connection = false;
     this.dispatcher = false;
     this.playing = false;
@@ -32,6 +33,9 @@ class Player {
     msg.channel.send(this.playlist.getQueueMsg());
   }
 
+  getServer() {
+    return this.server;
+  }
   
   async play(msg) {
     try {
