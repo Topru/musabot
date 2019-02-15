@@ -39,6 +39,9 @@ class Song {
   getId() {
     return this.id;
   }
+  getSearchWord() {
+    return this.searchWord();
+  }
 
   async _startVolumeScan() {
     const song = this;
