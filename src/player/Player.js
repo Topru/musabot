@@ -8,8 +8,9 @@ class Player {
     this.commands = {
       play: this.play.bind(this),
       stop: this.stop.bind(this),
-      next: this.playNext.bind(this),
-      repeat: this.toggleLoop.bind(this)
+      next: this.cmdNext.bind(this),
+      repeat: this.toggleLoop.bind(this),
+      queue: this.getQueue.bind(this)
     };
     this.connection = false;
     this.dispatcher = false;
@@ -21,10 +22,14 @@ class Player {
   toggleLoop(msg) {
     const repeat = this.playlist.toggleRepeat();
     if(repeat) {
-      msg.reply("Playlist is now looping.")
+      msg.channel.send("Playlist is now looping.")
     } else {
-      msg.reply("Playlist is now not looping.")
+      msg.channel.send("Playlist is now not looping.")
     }
+  }
+
+  getQueue(msg) {
+    msg.channel.send(this.playlist.getQueueMsg());
   }
 
   
@@ -40,10 +45,10 @@ class Player {
 
         this.connection = await msg.member.voiceChannel.join();
       }
-
       this.playlist.add(song);
       //console.log(this.playlist.getPlaylist());
       if(!this.playing) {
+        this.playing = true;
         const streamOptions = { volume: song.getVolume() };
         const stream = song.streamSong();
         this.dispatcher = this.connection.playStream(stream, streamOptions);
@@ -57,8 +62,11 @@ class Player {
     }
   }
 
-  playNext(msg) {
+  cmdNext(msg) {
     this.dispatcher.end();
+  }
+
+  playNext(msg) {
     const song = this.playlist.getNext();
     if(!song) {
       this.playing = false;
@@ -85,7 +93,6 @@ class Player {
   
   _setupDispatcher(msg) {
     this.dispatcher.on('start', () => {
-      this.playing = true;
       console.log('started playing ');
     });
     this.dispatcher.on('end', () => {

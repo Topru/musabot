@@ -38,6 +38,20 @@ class Playlist {
       }
     }
   }
+  
+  getQueueMsg() {
+    let queueString = "";
+    let i = this.currentIndex;
+    let order = 1;
+    if(!this.repeat) {
+      while(i < this.playlist.length) { 
+        queueString = queueString + order + ": " + this.playlist[i].getTitle() + "\n";
+        i++;
+        order++;
+      }
+    }
+    return "Current queue: ```" + queueString + "```";
+  }
 
   getNext() {
     let next = this.playlist[this.currentIndex + 1];
