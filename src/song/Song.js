@@ -40,7 +40,7 @@ class Song {
     return this.id;
   }
   getSearchWord() {
-    return this.searchWord();
+    return this.searchWord;
   }
 
   async _startVolumeScan() {

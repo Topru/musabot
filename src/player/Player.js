@@ -10,7 +10,8 @@ class Player {
       stop: this.stop.bind(this),
       next: this.cmdNext.bind(this),
       repeat: this.toggleLoop.bind(this),
-      queue: this.getQueue.bind(this)
+      queue: this.getQueue.bind(this),
+      remove: this.removeSong.bind(this)
     };
     this.server = serverid;
     this.connection = false;
@@ -35,6 +36,22 @@ class Player {
 
   getServer() {
     return this.server;
+  }
+
+  removeSong(msg) {
+    const currentSong = this.playlist.getCurrent();
+    const removed = this.playlist.removeSong(msg.content.substr(msg.content.indexOf(" ") + 1));
+
+    if(removed) {
+      msg.channel.send(`\`\`\`\nRemoved:\n[${removed.getTitle()}]\`\`\``)
+    } else {
+      msg.channel.send("Could not find song to remove");
+    }
+
+    if(removed.getId() == currentSong.getId()) {
+      this.playlist.setCurrentIndex(this.playlist.getCurrentIndex() - 1);
+      this.cmdNext(msg);
+    }
   }
   
   async play(msg) {

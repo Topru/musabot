@@ -17,8 +17,16 @@ class Playlist {
     return this.repeat;
   }
 
+  setCurrentIndex(index) {
+    this.currentIndex = index;
+  }
+
   getCurrentIndex() {
-    return this.current;
+    return this.currentIndex;
+  }
+
+  getCurrent() {
+    return this.playlist[this.currentIndex];
   }
 
   getPlaylist() {
@@ -27,18 +35,19 @@ class Playlist {
 
   removeSong(remove) {
     if(!isNaN(remove) && remove != 0) {
-      this.playlist.splice(parseInt(remove) + 1, 1);
+      return this.playlist.splice(parseInt(remove) - 1, 1)[0];
     } else {
-      let index = this.playlist.findIndex(song => song.getTitle == remove);
+      let index = this.playlist.findIndex(song => song.getTitle() == remove);
       if(index == -1) {
-        index = this.playlist.findIndex(song => song.getSearchWrod == remove);
+        index = this.playlist.findIndex(song => song.getSearchWord() == remove);
       }
       if(index >= 0) {
-        this.playlist.splice(index, 1);
+        return this.playlist.splice(index, 1)[0];
       }
     }
+    return false;
   }
-  
+
   getQueueMsg() {
     let queueString = "";
     let i = this.currentIndex;
