@@ -66,9 +66,11 @@ class Song {
             // node couldn't execute the command
             return;
           }
-          const meanVolume = stderr.split('mean_volume: ')[1].split(' dB')[0]
           // the *entire* stdout and stderr (buffered)
-          const playVolume = 1/(-25/parseInt(meanVolume));
+          const meanVolume = stderr.split('mean_volume: ')[1].split(' dB')[0];
+          //dB = 20*log( pctg ) so pctg = 100*pow(10,dB/20)
+          //get loudness in percentage compared to youtube maximum and convert it to 0-1 for volume to play at.
+          const playVolume = 1-Math.pow(10, meanVolume/20);
           song.setVolume(playVolume);
           const stats = fs.statSync(`./tmp/${fileName}.webm`);
           insertSong(song);
