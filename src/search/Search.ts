@@ -1,19 +1,16 @@
-const { google } = require('googleapis');
-const OAuth2 = google.auth.OAuth2;
+import { google } from 'googleapis';
 
-const Song = require('../song/Song');
+import { Song } from '../song/Song';
 
 const config = require('../../config.js');
 
-class Search {
-  constructor() {
-    this.youtube = google.youtube({
-      version: 'v3',
-      auth: config.youtubeToken
-    })
-  }
 
-  async searchYoutube(query) {
+const youtube = google.youtube({
+  version: 'v3',
+  auth: config.youtubeToken
+});
+
+export async function searchYoutube(query: String): Promise<Song>{
     try {
       if(this._isYouTubeUrl(query)) {
         const results = await this.youtube.videos.list({
@@ -21,17 +18,18 @@ class Search {
           part: 'snippet',
           maxResults: 5
         });
+
         if(results.data.items.length < 1) {
-          return false;
+          return null;
         }
+
         const songResult = results.data.items[0];
         return new Promise((resolve, reject) => {
           const song = new Song(songResult.id, `https://www.youtube.com/watch?v=${songResult.id}`, songResult.snippet.title, query);
           song.init((initsong) => {
             resolve(initsong);
           })
-        })
-
+        });
       } else {
         const results = await this.youtube.search.list({
           q: query,
@@ -46,9 +44,10 @@ class Search {
           }
         }
         if(video === null) {
-          return false;
+          return null;
         }
         const songResult = video;
+
         return new Promise((resolve, reject) => {
           const song = new Song(songResult.id.videoId, `https://www.youtube.com/watch?v=${songResult.id.videoId}`, songResult.snippet.title, query);
           song.init((initsong) => {
@@ -60,12 +59,12 @@ class Search {
     } catch(e) {
       console.log(e);
     }
-  }
+}
 
-  _isYouTubeUrl(url) {
+function _isYouTubeUrl(url): boolean {
     if (url != undefined || url != '') {
-      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
-      const match = url.match(regExp);
+      const regExp: RegExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|\?v=)([^#\&\?]*).*/;
+      const match: string = url.match(regExp);
       if (match && match[2].length == 11) {
         return true;
       }
@@ -73,8 +72,4 @@ class Search {
         return false;
       }
     }
-  }
-
 }
-
-module.exports = Search;

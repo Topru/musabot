@@ -1,43 +1,46 @@
 
-const ytdl = require('ytdl-core');
+import { Song } from '../song/Song';
 
-class Playlist {
+export class Playlist {
+  playlist: Song[];
+  currentIndex: number;
+  repeat: boolean;
   constructor() {
     this.playlist = [];
     this.currentIndex = 0;
     this.repeat = false;
   }
 
-  add(song) {
+  add(song: Song) {
     this.playlist.push(song);
   }
 
-  toggleRepeat() {
+  toggleRepeat(): boolean {
     this.repeat = !this.repeat;
     return this.repeat;
   }
 
-  setCurrentIndex(index) {
+  setCurrentIndex(index): void {
     this.currentIndex = index;
   }
 
-  getCurrentIndex() {
+  getCurrentIndex(): number {
     return this.currentIndex;
   }
 
-  getCurrent() {
+  getCurrent(): Song {
     return this.playlist[this.currentIndex];
   }
 
-  getPlaylist() {
+  getPlaylist(): Song[] {
     return this.playlist;
   }
 
-  removeSong(remove) {
+  removeSong(remove): Song {
     if(!isNaN(remove) && remove != 0) {
       return this.playlist.splice(parseInt(remove) - 1, 1)[0];
     } else {
-      let index = this.playlist.findIndex(song => song.getTitle() == remove);
+      let index: number = this.playlist.findIndex(song => song.getTitle() == remove);
       if(index == -1) {
         index = this.playlist.findIndex(song => song.getSearchWord() == remove);
       }
@@ -45,13 +48,13 @@ class Playlist {
         return this.playlist.splice(index, 1)[0];
       }
     }
-    return false;
+    return null;
   }
 
-  getQueueMsg() {
-    let queueString = "";
-    let i = this.currentIndex;
-    let order = 1;
+  getQueueMsg(): string {
+    let queueString: string = "";
+    let i: number = this.currentIndex;
+    let order: number = 1;
     if(!this.repeat) {
       while(i < this.playlist.length) { 
         queueString = queueString + order + ": " + this.playlist[i].getTitle() + "\n";
@@ -62,8 +65,8 @@ class Playlist {
     return "Current queue: ```" + queueString + "```";
   }
 
-  getNext() {
-    let next = this.playlist[this.currentIndex + 1];
+  getNext(): Song {
+    let next: Song = this.playlist[this.currentIndex + 1];
     if(next) {
       this.currentIndex++;
       return next;
@@ -71,10 +74,8 @@ class Playlist {
       this.currentIndex = 0;
       return this.playlist[0];
     } else {
-      return false;
+      return null;
     }
   }
 
 }
-
-module.exports = Playlist;
